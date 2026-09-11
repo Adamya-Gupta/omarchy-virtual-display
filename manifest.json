@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.adamya-gupta.virtual-display",
+  "name": "Virtual Display",
+  "version": "1.0.0",
+  "author": "Adamya Gupta",
+  "license": "MIT",
+  "description": "Create and manage a virtual display from the Omarchy bar with selectable resolutions and automatic monitor positioning.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Virtual Display",
+    "category": "Display",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
