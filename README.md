@@ -5,11 +5,11 @@ A lightweight Omarchy bar plugin for creating and managing a virtual headless di
 <div align="center">
 <table align="center">
   <tr>
-    <td width ="340px">
+    <td>
       <img src="preview.png" >
     </td>
     <td >
-      <img src="./screenshots/lightpreview.png">
+      <img src="./screenshots/light.png">
     </td>
   </tr>
 </table>
@@ -105,10 +105,6 @@ Examples:
 ```
 ## 🌐 VNC / Connecting From Another Device
 
-<div align="center">
-<img src="./screenshots/AVNC.png" width="400px">
-</div>
-
 The virtual display is streamed using [WayVNC](https://github.com/any1/wayvnc).
 
 By default, WayVNC listens on TCP port **5900**
@@ -163,6 +159,11 @@ Use this address in your VNC client:
 Then connect from another device using this ip , eg: `192.168.1.42:5900`
 
 Your VNC client may also allow: `192.168.1.42` because port `5900` is the normal VNC default.
+
+<div align="center">
+<img src="./screenshots/AVNC.png" width="400px">
+</div>
+
 
 ## CLI Usage
 
