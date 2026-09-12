@@ -2,7 +2,25 @@
 
 A lightweight Omarchy bar plugin for creating and managing a virtual headless display through Hyprland and WayVNC.
 
-![Virtual Display](preview.png)
+<div align="center">
+<table align="center">
+  <tr>
+    <td width ="340px">
+      <img src="preview.png" >
+    </td>
+    <td >
+      <img src="./screenshots/lightpreview.png">
+    </td>
+  </tr>
+</table>
+</div>
+
+## Use Your Virtual Display Anywhere
+
+The virtual display can be accessed remotely through VNC from another computer, laptop, or Android device over a local Ethernet or Wi-Fi network.
+
+<img src="./screenshots/Multi-device.webp" alt="Virtual Display accessed from multiple devices">
+
 
 ## Features
 
@@ -18,7 +36,9 @@ A lightweight Omarchy bar plugin for creating and managing a virtual headless di
 
 ## Requirements
 
-- [Omarchy Quattro / v4](https://omarchy.org/)
+This plugin is designed for **Omarchy Quattro / v4** and requires:
+
+- [Omarchy](https://omarchy.org/)
 - [Hyprland](https://hyprland.org/)
 - [WayVNC](https://github.com/any1/wayvnc)
 - `jq`
@@ -33,15 +53,17 @@ sudo pacman -S wayvnc jq
 >[!NOTE]
 >The plugin does **not** install system packages automatically.
 >
->This is intentional: installing packages or modifying privileged system configuration from a shell plugin would be unnecessary and undesirable. The plugin only uses the dependencies once they are available on the system.
+> This keeps package installation and privileged system changes outside the plugin. The plugin only uses the dependencies when they are already installed.
 
 
 ## Install
 
 ```sh
 omarchy plugin add https://github.com/adamya-gupta/omarchy-virtual-display.git --enable
-
 ```
+
+PLUGIN ID: `io.github.adamya-gupta.virtual-display`
+
 ## Usage
 
 Click the **Virtual Display** icon in the Omarchy bar.
@@ -51,9 +73,6 @@ The panel provides three main controls.
 ### Position
 
 Choose: `LEFT` or `RIGHT`
-
->[!NOTE]
->The main display is always kept at: `0x0`
 
 ### Resolution
 
@@ -86,8 +105,11 @@ Examples:
 ```
 ## 🌐 VNC / Connecting From Another Device
 
-The virtual display is streamed using [WayVNC](https://github.com/any1/wayvnc).
+<div align="center">
+<img src="./screenshots/AVNC.png" width="400px">
+</div>
 
+The virtual display is streamed using [WayVNC](https://github.com/any1/wayvnc).
 
 By default, WayVNC listens on TCP port **5900**
 
@@ -98,9 +120,20 @@ wayvnc -o virtual_display 0.0.0.0
 ```
 Binding to `0.0.0.0` allows WayVNC to listen on the machine's network interfaces instead of only localhost.
 
-## Find the Omarchy machine's IP address
+### 1. Start the virtual display
 
-Run:
+From the Omarchy bar, choose a resolution. eg: `1920x1080`. Wait for the display to become active.
+
+>[!TIP]
+>You can also start it from the CLI:
+>
+>```bash
+>bash ~/.config/omarchy/plugins/io.github.adamya-gupta.virtual-display/vdcreate.sh start 1920x1080
+>```
+
+### 2. Find the Omarchy machine's IP address
+
+On the Omarchy machine, run:
 
 ```bash
 hostname -I
@@ -113,26 +146,23 @@ ip addr
 
 For example: `192.168.1.42`
 
-Then connect from another device using `192.168.1.42:5900`
+If multiple addresses are shown, use the address belonging to the network you want the other device to connect through.
 
-Your VNC client may also allow: `192.168.1.42` because port `5900` is the normal VNC default.
+
+### 3. Connect using a VNC client
 
 >[!IMPORTANT]
 >Both devices must be on the same network.
 
-### Check whether WayVNC is listening
+Use this address in your VNC client:
 
-You can verify the port with:
-
-```bash
-ss -ltn | grep 5900
+```text
+<OMARCHY-IP>:5900
 ```
 
-You can also check the process:
+Then connect from another device using this ip , eg: `192.168.1.42:5900`
 
-```bash
-pgrep -a wayvnc
-```
+Your VNC client may also allow: `192.168.1.42` because port `5900` is the normal VNC default.
 
 ## CLI Usage
 
@@ -208,8 +238,47 @@ bash vdcreate.sh status
 
 ## Configure
 
+There is currently no separate plugin configuration file. Display settings are controlled from the bar panel or through the CLI.
+
+### Bar placement
+
 ```bash
 omarchy bar move io.github.adamya-gupta.virtual-display --section right
+```
+
+```bash
+omarchy bar move io.github.adamya-gupta.virtual-display --section left
+```
+
+```bash
+omarchy bar move io.github.adamya-gupta.virtual-display --section center
+```
+### Preferred side
+
+The last selected side is remembered by the CLI backend.
+
+You can also set it manually:
+
+```bash
+bash ~/.config/omarchy/plugins/io.github.adamya-gupta.virtual-display/vdcreate.sh set-side left
+```
+or:
+
+```bash
+bash ~/.config/omarchy/plugins/io.github.adamya-gupta.virtual-display/vdcreate.sh set-side right
+```
+### VNC configuration
+
+The current plugin starts WayVNC on the default VNC port:
+
+```text
+5900
+```
+
+and binds it to:
+
+```text
+0.0.0.0
 ```
 
 ## Remove
@@ -225,6 +294,14 @@ bash ~/.config/omarchy/plugins/io.github.adamya-gupta.virtual-display/vdcreate.s
 
 ## Troubleshooting
 
+### `wayvnc` of `jq` is not found
+
+Install it:
+
+```bash
+sudo pacman -S wayvnc jq
+```
+
 ### The widget is visible but clicking it does nothing
 
 Check the Omarchy shell log:
@@ -239,15 +316,36 @@ Then restart the shell:
 omarchy-restart-shell
 ```
 
-### `wayvnc` of `jq` is not found
+Then restart/reopen the plugin.
 
-Install it:
+### Virtual display is created but vnc is not working
+
+Check whether WayVNC is listening
+
+You can verify the port with:
 
 ```bash
-sudo pacman -S wayvnc jq
+ss -ltn | grep 5900
 ```
 
-Then restart/reopen the plugin.
+You can also check the process:
+
+```bash
+pgrep -a wayvnc
+```
+
+>[!NOTE]
+>If another application is already using port `5900`, WayVNC may fail to bind.
+
+### The main monitor changes position
+
+Check:
+
+```bash
+hyprctl monitors
+```
+
+The main display should remain at `0x0`.
 
 ## 🧩 How It Works
 
@@ -298,9 +396,9 @@ The virtual display is then positioned relative to it.
 Suppose the main display is:
 
 ```text
-1920x1080
-scale = 1.25
-position = 0x0
+Resolution: 1920x1080
+Scale:      1.25
+Position:   0x0
 ```
 
 Hyprland positions monitors using their logical/scaled size, so the logical width is:
